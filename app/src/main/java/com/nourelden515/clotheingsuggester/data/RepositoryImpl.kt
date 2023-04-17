@@ -23,7 +23,6 @@ class RepositoryImpl(
         )
     }
 
-
     override fun saveLatLon(lat: Float, lon: Float) {
         sharedPreferences.saveLatLon(lat, lon)
     }
@@ -31,5 +30,22 @@ class RepositoryImpl(
     override fun getLatLon(): Pair<Float?, Float?> {
         return sharedPreferences.getLatLon()
     }
+
+    override fun saveImageIndex(newImageIndex: Int) {
+        sharedPreferences.saveImageIndex(newImageIndex)
+    }
+
+    override fun getImageIndex(): Int {
+        return sharedPreferences.getImageIndex()!!
+    }
+
+    override fun saveToday(today: Int) {
+        sharedPreferences.saveToday(today)
+    }
+
+    override fun getLastViewedDay(): Int {
+        return sharedPreferences.getLastViewedDay()!!
+    }
+
 
 }

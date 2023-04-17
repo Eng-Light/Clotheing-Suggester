@@ -13,6 +13,7 @@ import com.nourelden515.clotheingsuggester.databinding.ActivityMainBinding
 import com.nourelden515.clotheingsuggester.ui.home.HomeFragment
 import com.nourelden515.clotheingsuggester.ui.location.LocationFragment
 import com.nourelden515.clotheingsuggester.utils.SharedPreferencesUtils
+import java.util.Calendar
 
 class MainActivity : AppCompatActivity(), MainView {
 
@@ -30,9 +31,19 @@ class MainActivity : AppCompatActivity(), MainView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
+        setAppTheme()
         setContentView(binding.root)
         presenter.getLatLon()
         statusBarTheme()
+    }
+
+    private fun setAppTheme() {
+        val hourOfDay = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+        if (hourOfDay in 6..17) {
+            setTheme(R.style.Theme_ClotheingSuggester_Day)
+        } else {
+            setTheme(R.style.Theme_ClotheingSuggester_Night)
+        }
     }
 
     override fun navigateToHome(location: Pair<Float?, Float?>) {

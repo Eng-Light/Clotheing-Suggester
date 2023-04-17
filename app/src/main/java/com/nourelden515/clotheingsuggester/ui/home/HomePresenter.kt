@@ -23,4 +23,14 @@ class HomePresenter(
     private fun onGetWeatherDataFailure(error: Throwable) {
         homeView.showError(error)
     }
+
+    fun saveImageData(newImageIndex: Int, today: Int) {
+        repository.saveImageIndex(newImageIndex)
+        repository.saveToday(today)
+    }
+
+    fun getImageData() {
+        homeView.getImageData(repository.getImageIndex(), repository.getLastViewedDay())
+    }
+
 }
