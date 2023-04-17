@@ -1,10 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="colorPrimary">#7D9ABA</color>
+    <color name="colorPrimaryDark">#5B6076</color>
+    <color name="colorPrimaryVariant">#B22097B1</color>
+    <color name="colorSecondaryVariant">#801A798E</color>
+    <color name="colorTextTitle">#defefefe</color>
+    <color name="colorTextSubTitle">#99fefefe</color>
+    <color name="colorTextNormal">#4dfefefe</color>
+    <color name="colorBackgroundDark">#40445F</color>
+    <color name="colorBackgroundLight">#6487AF</color>
+
+
+    <color name="homeBackgroundLightStart">#86A6E3</color>
+    <color name="homeBackgroundLightEnd">#6099D2</color>
+    <color name="homeBackgroundDarkStart">#46467C</color>
+    <color name="homeBackgroundDarkEnd">#3A3E6D</color>
+
+    <color name="homeCardLightColor">#62A5F3</color>
+    <color name="homeCardDarkColor">#313558</color>
+
+    <color name="transparent">#00000000</color>
 </resources>

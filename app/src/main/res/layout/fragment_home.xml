@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/swipeToRefresh"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/customBackgroundColor"
+        android:paddingHorizontal="@dimen/spacing_small"
+        android:paddingTop="@dimen/spacing_medium"
+        tools:context=".ui.home.HomeFragment">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/text_location"
+            android:layout_width="wrap_content"
+            android:layout_height="?actionBarSize"
+            android:layout_marginStart="@dimen/spacing_small"
+            android:gravity="center_vertical"
+            android:textColor="@color/colorTextTitle"
+            android:textSize="@dimen/text_giant"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Al Kanater Al Khairea" />
+
+        <ImageButton
+            android:id="@+id/button_settings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/spacing_small"
+            android:background="#00000000"
+            android:backgroundTint="@null"
+            android:src="@drawable/ic_settings"
+            app:layout_constraintBottom_toBottomOf="@id/text_location"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/text_location" />
+
+        <include
+            android:id="@+id/weatherCard"
+            layout="@layout/card_view_weather"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_small"
+            app:layout_constraintTop_toBottomOf="@id/text_location" />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/image_outfit"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:paddingHorizontal="@dimen/spacing_medium"
+            android:paddingBottom="@dimen/spacing_medium"
+            android:scaleType="fitCenter"
+            app:layout_constraintBottom_toTopOf="@id/button_skip"
+            app:layout_constraintEnd_toEndOf="@id/weatherCard"
+            app:layout_constraintStart_toStartOf="@id/weatherCard"
+            app:layout_constraintTop_toBottomOf="@id/weatherCard" />
+
+        <Button
+            android:id="@+id/button_skip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_medium"
+            android:backgroundTint="?attr/customButtonBackgroundColor"
+            android:text="@string/skip_for_today"
+            android:textSize="@dimen/text_medium"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/button_settings" />
+
+        <ProgressBar
+            android:id="@+id/loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminateTint="@color/colorTextTitle"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
