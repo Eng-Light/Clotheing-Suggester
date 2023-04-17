@@ -5,17 +5,57 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import com.nourelden515.clotheingsuggester.R
+import com.nourelden515.clotheingsuggester.data.RepositoryImpl
+import com.nourelden515.clotheingsuggester.data.source.RemoteDataSourceImpl
 import com.nourelden515.clotheingsuggester.databinding.ActivityMainBinding
+import com.nourelden515.clotheingsuggester.ui.home.HomeFragment
+import com.nourelden515.clotheingsuggester.ui.location.LocationFragment
+import com.nourelden515.clotheingsuggester.utils.SharedPreferencesUtils
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), MainView {
+
+    private val presenter by lazy {
+        MainPresenter(
+            RepositoryImpl(
+                RemoteDataSourceImpl(),
+                SharedPreferencesUtils(this)
+            ), this
+        )
+    }
 
     private lateinit var binding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        presenter.getLatLon()
         statusBarTheme()
+    }
+
+    override fun navigateToHome(location: Pair<Float?, Float?>) {
+        if (location.first != 0F && location.second != 0F) {
+            navigateToHomeFragment(Pair(location.first!!.toDouble(), location.second!!.toDouble()))
+        } else {
+            navigateToLocationFragment()
+        }
+    }
+
+    private fun replaceFragment(fragment: Fragment) {
+        val transaction = supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.fragment_container, fragment)
+        transaction.commit()
+    }
+
+    private fun navigateToHomeFragment(location: Pair<Double, Double>) {
+        val homeFragment = HomeFragment.newInstance(location.first, location.second)
+        replaceFragment(homeFragment)
+    }
+
+    private fun navigateToLocationFragment() {
+        replaceFragment(LocationFragment())
     }
 
     @Suppress("DEPRECATION")

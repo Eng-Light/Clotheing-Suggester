@@ -2,4 +2,11 @@
     <string name="app_name">Clotheing Suggester</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="rationale_title">We need permission to access your location</string>
+    <string name="rationale_title_background">We need permission to access your location in Background</string>
+    <string name="rationale_desc">This app relies on read access to your Location.
+We require access to this permission to find your location and set the reminder.
+We will not store any location info in our data base if they are not a part of our platform.
+For further info read our privacy policy.</string>
+    <string name="hello_from_home_fragment">Hello From Home Fragment</string>
 </resources>
