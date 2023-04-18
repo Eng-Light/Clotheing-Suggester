@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.nourelden515.clotheingsuggester.R
+import com.nourelden515.clotheingsuggester.ui.home.HomeFragment
 
 fun Fragment.replaceFragment(fragment: Fragment) {
     val fragmentManager = requireActivity().supportFragmentManager
@@ -15,7 +16,7 @@ fun Fragment.replaceFragment(fragment: Fragment) {
     fragmentTransaction.commit()
 }
 
-fun Fragment.getSummerOutfits(): List<Drawable> {
+fun HomeFragment.getSummerOutfits(): List<Drawable> {
     return listOf(
         AppCompatResources.getDrawable(requireContext(), R.drawable.summer_outfit1)!!,
         AppCompatResources.getDrawable(requireContext(), R.drawable.summer_outfit2)!!,
@@ -30,7 +31,7 @@ fun Fragment.getSummerOutfits(): List<Drawable> {
     )
 }
 
-fun Fragment.getWinterOutfits(): List<Drawable> {
+fun HomeFragment.getWinterOutfits(): List<Drawable> {
     return listOf(
         AppCompatResources.getDrawable(requireContext(), R.drawable.winter_outfit1)!!,
         AppCompatResources.getDrawable(requireContext(), R.drawable.winter_outfit2)!!,

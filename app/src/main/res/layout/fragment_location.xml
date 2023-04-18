@@ -33,7 +33,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/spacing_large"
-        android:paddingVertical="@dimen/spacing_small"
+        android:paddingVertical="@dimen/spacing_medium"
         android:text="@string/get_my_location_and_continue"
         android:textSize="@dimen/text_large"
         app:layout_constraintBottom_toBottomOf="parent"
