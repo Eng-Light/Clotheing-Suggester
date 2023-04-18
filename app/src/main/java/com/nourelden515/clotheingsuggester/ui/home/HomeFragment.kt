@@ -8,6 +8,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.nourelden515.clotheingsuggester.R
 import com.nourelden515.clotheingsuggester.base.BaseFragment
+import com.nourelden515.clotheingsuggester.data.Repository
 import com.nourelden515.clotheingsuggester.data.RepositoryImpl
 import com.nourelden515.clotheingsuggester.data.models.WeatherResponse
 import com.nourelden515.clotheingsuggester.data.source.RemoteDataSourceImpl
@@ -17,6 +18,7 @@ import com.nourelden515.clotheingsuggester.utils.getSummerOutfits
 import com.nourelden515.clotheingsuggester.utils.getWinterOutfits
 import com.nourelden515.clotheingsuggester.utils.onClickBackFromNavigation
 import com.nourelden515.clotheingsuggester.utils.replaceFragment
+import com.nourelden515.clotheingsuggester.utils.shared.SharedPreferencesInterface
 import com.nourelden515.clotheingsuggester.utils.shared.SharedPreferencesUtils
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -32,12 +34,19 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(), HomeView {
     private var imageIndex by Delegates.notNull<Int>()
     private var lastViewedDay by Delegates.notNull<Int>()
 
+    private val sharedPreferencesUtils: SharedPreferencesInterface by lazy {
+        SharedPreferencesUtils(requireContext())
+    }
+    private val repository: Repository by lazy {
+        RepositoryImpl(
+            RemoteDataSourceImpl(),
+            sharedPreferencesUtils
+        )
+    }
+
     private val presenter by lazy {
         HomePresenter(
-            RepositoryImpl(
-                RemoteDataSourceImpl(),
-                SharedPreferencesUtils(requireContext())
-            ), this
+            repository, this
         )
     }
 
@@ -47,11 +56,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(), HomeView {
     override fun setUp() {
         getLocation()
         refreshApp()
-        if (::location.isInitialized) {
-            binding.loading.visibility = View.VISIBLE
-            presenter.getImageData()
-            presenter.getWeatherData(location.first, location.second)
-        }
+        checkLocationAndGetAllData()
         addCallbacks()
         onClickBackFromNavigation()
     }
@@ -66,68 +71,89 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(), HomeView {
         binding.buttonSkip.setOnClickListener {
             val outFits = getOutfits()
             val today = getToday()
-            val newImageIndex = Random().nextInt(outFits.size)
-            val newImage = outFits[newImageIndex]
-            presenter.saveImageData(newImageIndex, today)
-            binding.imageOutfit.setImageDrawable(newImage)
+            setNewImage(outFits, today)
         }
     }
 
     private fun refreshApp() {
         binding.swipeToRefresh.setOnRefreshListener {
-            binding.loading.visibility = View.VISIBLE
+            showLoading()
             presenter.getWeatherData(location.first, location.second)
             binding.swipeToRefresh.isRefreshing = false
         }
+    }
+
+    private fun showLoading() {
+        binding.loading.visibility = View.VISIBLE
     }
 
     override fun showWeatherData(weatherData: WeatherResponse) {
         log(weatherData.toString())
         temp = weatherData.currentWeather.temperatureCelsius.toInt()
         activity?.runOnUiThread {
-            binding.loading.visibility = View.INVISIBLE
-            "${weatherData.location.name}, ${weatherData.location.region}".also {
-                binding.textLocation.text = it
-            }
-            with(binding.weatherCard) {
-                "${temp}°C".also {
-                    textTemp.text = it
-                }
-                textCondition.text = weatherData.currentWeather.condition.text
-                textDateTime.text = convertDateFormat(weatherData.location.localTime)
-                "Feels Like ${
-                    weatherData
-                        .currentWeather
-                        .feelsLikeTemperatureCelsius.toInt()
-                }°".also {
-                    textFeelsLike.text = it
-                }
-            }
-            Glide
-                .with(binding.weatherCard.imageWeather.context)
-                .load("https:/${weatherData.currentWeather.condition.iconUrl}")
-                .into(binding.weatherCard.imageWeather)
-            setOutfitImage()
+            stopLoading()
+            showLocation(weatherData)
+            showDataInWeatherCard(weatherData)
+            loadImage(weatherData.currentWeather.condition.iconUrl)
         }
+    }
+
+    private fun showLocation(weatherData: WeatherResponse) {
+        "${weatherData.location.name}, ${weatherData.location.region}".also {
+            binding.textLocation.text = it
+        }
+    }
+
+    private fun showDataInWeatherCard(weatherData: WeatherResponse) {
+        with(binding.weatherCard) {
+            "${temp}°C".also {
+                textTemp.text = it
+            }
+            textCondition.text = weatherData.currentWeather.condition.text
+            textDateTime.text = convertDateFormat(weatherData.location.localTime)
+            "Feels Like ${
+                weatherData
+                    .currentWeather
+                    .feelsLikeTemperatureCelsius.toInt()
+            }°C".also {
+                textFeelsLike.text = it
+            }
+        }
+    }
+
+    private fun stopLoading() {
+        binding.loading.visibility = View.INVISIBLE
+    }
+
+    private fun loadImage(iconUrl: String) {
+        Glide
+            .with(binding.weatherCard.imageWeather.context)
+            .load("https:/${iconUrl}")
+            .into(binding.weatherCard.imageWeather)
+        setOutfitImage()
     }
 
     override fun showError(error: Throwable) {
         activity?.runOnUiThread {
-            binding.loading.visibility = View.INVISIBLE
+            stopLoading()
             showSnackBar(getString(R.string.connection_error)) {
-                if (::location.isInitialized) {
-                    binding.loading.visibility = View.VISIBLE
-                    presenter.getImageData()
-                    presenter.getWeatherData(location.first, location.second)
-                }
+                checkLocationAndGetAllData()
             }
+        }
+    }
+
+    private fun checkLocationAndGetAllData() {
+        if (::location.isInitialized) {
+            showLoading()
+            presenter.getImageData()
+            presenter.getWeatherData(location.first, location.second)
         }
     }
 
     private fun showSnackBar(message: String, action: (() -> Unit)? = null) {
         val snackBar = Snackbar.make(requireView(), message, Snackbar.LENGTH_LONG)
         action?.let {
-            snackBar.setAction("Retry") {
+            snackBar.setAction(getString(R.string.retry)) {
                 it()
             }
         }
@@ -138,16 +164,27 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(), HomeView {
         val outFits = getOutfits()
         val today = getToday()
         if (imageIndex == -1 || today != lastViewedDay) {
-            val newImageIndex = Random().nextInt(outFits.size)
-            val newImage = outFits[newImageIndex]
-            presenter.saveImageData(newImageIndex, today)
-
-            binding.imageOutfit.setImageDrawable(newImage)
+            setNewImage(outFits, today)
         } else {
-            val savedImage = outFits[imageIndex]
-            binding.imageOutfit.setImageDrawable(savedImage)
+            setSameImage(outFits)
         }
         setSkipListener()
+    }
+
+    private fun setSameImage(outFits: List<Drawable>) {
+        val savedImage = outFits[imageIndex]
+        binding.imageOutfit.setImageDrawable(savedImage)
+    }
+
+    private fun setNewImage(
+        outFits: List<Drawable>,
+        today: Int
+    ) {
+        val newImageIndex = Random().nextInt(outFits.size)
+        val newImage = outFits[newImageIndex]
+        presenter.saveImageData(newImageIndex, today)
+
+        binding.imageOutfit.setImageDrawable(newImage)
     }
 
     private fun getToday(): Int {
@@ -175,11 +212,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(), HomeView {
     }
 
     private fun convertDateFormat(dateStr: String): String {
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd H:mm")
+        val formatter = DateTimeFormatter.ofPattern(getString(R.string.yyyy_mm_dd_h_mm))
         val dateTime = LocalDateTime.parse(dateStr, formatter)
 
         val dayOfWeek = dateTime.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())
-        val time = dateTime.format(DateTimeFormatter.ofPattern("h:mm a"))
+        val time = dateTime.format(DateTimeFormatter.ofPattern(getString(R.string.h_mm_a)))
 
         return "$dayOfWeek, $time"
     }

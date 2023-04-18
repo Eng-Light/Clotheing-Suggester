@@ -31,4 +31,7 @@ For further info read our privacy policy.</string>
     <string name="please_enable_your_location_settings">Please Enable your Location Settings</string>
     <string name="location_is_disabled">Location is Disabled</string>
     <string name="connection_error">Connection Error</string>
+    <string name="retry">Retry</string>
+    <string name="yyyy_mm_dd_h_mm">yyyy-MM-dd H:mm</string>
+    <string name="h_mm_a">h:mm a</string>
 </resources>

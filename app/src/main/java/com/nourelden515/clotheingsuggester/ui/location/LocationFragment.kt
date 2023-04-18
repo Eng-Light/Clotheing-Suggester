@@ -14,22 +14,30 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.nourelden515.clotheingsuggester.R
 import com.nourelden515.clotheingsuggester.base.BaseFragment
+import com.nourelden515.clotheingsuggester.data.Repository
 import com.nourelden515.clotheingsuggester.data.RepositoryImpl
 import com.nourelden515.clotheingsuggester.data.source.RemoteDataSourceImpl
 import com.nourelden515.clotheingsuggester.databinding.FragmentLocationBinding
 import com.nourelden515.clotheingsuggester.ui.home.HomeFragment
-import com.nourelden515.clotheingsuggester.utils.shared.SharedPreferencesUtils
 import com.nourelden515.clotheingsuggester.utils.onClickBackFromNavigation
 import com.nourelden515.clotheingsuggester.utils.replaceFragment
+import com.nourelden515.clotheingsuggester.utils.shared.SharedPreferencesInterface
+import com.nourelden515.clotheingsuggester.utils.shared.SharedPreferencesUtils
 
 class LocationFragment : BaseFragment<FragmentLocationBinding>(), LocationView {
 
+    private val sharedPreferencesUtils: SharedPreferencesInterface by lazy {
+        SharedPreferencesUtils(requireContext())
+    }
+    private val repository: Repository by lazy {
+        RepositoryImpl(
+            RemoteDataSourceImpl(),
+            sharedPreferencesUtils
+        )
+    }
     private val presenter by lazy {
         LocationPresenter(
-            RepositoryImpl(
-                RemoteDataSourceImpl(),
-                SharedPreferencesUtils(requireContext())
-            ), this
+            repository, this
         )
     }
 
