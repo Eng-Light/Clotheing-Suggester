@@ -2,11 +2,11 @@ package com.nourelden515.clotheingsuggester.data
 
 import com.nourelden515.clotheingsuggester.data.models.WeatherResponse
 import com.nourelden515.clotheingsuggester.data.source.RemoteDataSource
-import com.nourelden515.clotheingsuggester.utils.SharedPreferencesUtils
+import com.nourelden515.clotheingsuggester.utils.shared.SharedPreferencesInterface
 
 class RepositoryImpl(
     private val remoteDataSource: RemoteDataSource,
-    private val sharedPreferences: SharedPreferencesUtils
+    private val sharedPreferences: SharedPreferencesInterface
 ) : Repository {
 
     override fun getWeatherData(
@@ -29,6 +29,10 @@ class RepositoryImpl(
 
     override fun getLatLon(): Pair<Float?, Float?> {
         return sharedPreferences.getLatLon()
+    }
+
+    override fun clearLatLon() {
+        sharedPreferences.clearLatLon()
     }
 
     override fun saveImageIndex(newImageIndex: Int) {

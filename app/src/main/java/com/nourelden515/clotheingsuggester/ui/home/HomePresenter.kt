@@ -1,10 +1,10 @@
 package com.nourelden515.clotheingsuggester.ui.home
 
-import com.nourelden515.clotheingsuggester.data.RepositoryImpl
+import com.nourelden515.clotheingsuggester.data.Repository
 import com.nourelden515.clotheingsuggester.data.models.WeatherResponse
 
 class HomePresenter(
-    private val repository: RepositoryImpl,
+    private val repository: Repository,
     private val homeView: HomeView
 ) {
     fun getWeatherData(lat: Double, lon: Double) {
@@ -22,6 +22,10 @@ class HomePresenter(
 
     private fun onGetWeatherDataFailure(error: Throwable) {
         homeView.showError(error)
+    }
+
+    fun resetLocation() {
+        repository.clearLatLon()
     }
 
     fun saveImageData(newImageIndex: Int, today: Int) {

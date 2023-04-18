@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <attr name="customBackgroundColor" format="color" />
     <attr name="customButtonBackgroundColor" format="reference" />
 
@@ -29,6 +29,10 @@
         <item name="customBackgroundColor">@drawable/home_background_night</item>
         <item name="customButtonBackgroundColor">@color/homeCardDarkColor</item>
         <item name="android:fitsSystemWindows">true</item>
+
+        <!-- Splash Screen-->
+        <item name="android:windowBackground">@mipmap/ic_launcher_round</item>
+        <item name="android:windowIsTranslucent">true</item>
     </style>
 
 </resources>
