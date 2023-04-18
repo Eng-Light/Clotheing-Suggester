@@ -15,6 +15,7 @@
         <item name="customBackgroundColor">@drawable/home_background_day</item>
         <item name="customButtonBackgroundColor">@color/homeCardLightColor</item>
         <item name="android:fitsSystemWindows">true</item>
+
     </style>
 
     <style name="Theme.ClotheingSuggester.Night" parent="Theme.Material3.Light.NoActionBar">
@@ -30,9 +31,11 @@
         <item name="customButtonBackgroundColor">@color/homeCardDarkColor</item>
         <item name="android:fitsSystemWindows">true</item>
 
+    </style>
+
+    <style name="SplashTheme" parent="Theme.Material3.Light.NoActionBar">
         <!-- Splash Screen-->
-        <item name="android:windowBackground">@mipmap/ic_launcher_round</item>
-        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@drawable/splash_image</item>
     </style>
 
 </resources>
