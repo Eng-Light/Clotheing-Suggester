@@ -6,25 +6,39 @@
     android:layout_height="match_parent"
     tools:context=".ui.location.LocationFragment">
 
-    <!-- TODO: Update blank fragment layout -->
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/image_location"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        app:layout_constraintBottom_toTopOf="@id/text_on_boarding"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/location" />
+
     <TextView
-        android:id="@+id/text_view_name"
+        android:id="@+id/text_on_boarding"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/hello_blank_fragment"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="@string/get_the_best_clothes_suggestions_based_on_the_weather_in_your_location"
+        android:textSize="@dimen/text_giant"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:paddingHorizontal="@dimen/spacing_medium"
+        app:layout_constraintBottom_toTopOf="@id/button_continue"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/image_location" />
 
     <Button
         android:id="@+id/button_continue"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Get my location and continue"
+        android:layout_marginHorizontal="@dimen/spacing_large"
+        android:paddingVertical="@dimen/spacing_small"
+        android:text="@string/get_my_location_and_continue"
+        android:textSize="@dimen/text_large"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_view_name" />
+        app:layout_constraintTop_toBottomOf="@id/text_on_boarding" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

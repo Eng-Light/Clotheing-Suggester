@@ -24,6 +24,10 @@ class HomePresenter(
         homeView.showError(error)
     }
 
+    fun resetLocation() {
+        repository.clearLatLon()
+    }
+
     fun saveImageData(newImageIndex: Int, today: Int) {
         repository.saveImageIndex(newImageIndex)
         repository.saveToday(today)

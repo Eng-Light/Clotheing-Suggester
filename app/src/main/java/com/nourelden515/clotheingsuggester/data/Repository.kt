@@ -11,7 +11,7 @@ interface Repository {
 
     fun saveLatLon(lat: Float, lon: Float)
     fun getLatLon(): Pair<Float?, Float?>
-
+    fun clearLatLon()
     fun saveImageIndex(newImageIndex: Int)
     fun getImageIndex(): Int
     fun saveToday(today: Int)

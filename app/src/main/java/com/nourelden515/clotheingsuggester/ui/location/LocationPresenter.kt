@@ -9,4 +9,9 @@ class LocationPresenter(
     fun saveLatLon(lat: Float, lon: Float) {
         repository.saveLatLon(lat, lon)
     }
+    /**
+     * You Can Use
+     * @see locationView
+     * As a reference to LocationView
+     */
 }

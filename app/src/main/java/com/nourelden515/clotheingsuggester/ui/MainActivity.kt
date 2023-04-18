@@ -12,7 +12,7 @@ import com.nourelden515.clotheingsuggester.data.source.RemoteDataSourceImpl
 import com.nourelden515.clotheingsuggester.databinding.ActivityMainBinding
 import com.nourelden515.clotheingsuggester.ui.home.HomeFragment
 import com.nourelden515.clotheingsuggester.ui.location.LocationFragment
-import com.nourelden515.clotheingsuggester.utils.SharedPreferencesUtils
+import com.nourelden515.clotheingsuggester.utils.shared.SharedPreferencesUtils
 import java.util.Calendar
 
 class MainActivity : AppCompatActivity(), MainView {

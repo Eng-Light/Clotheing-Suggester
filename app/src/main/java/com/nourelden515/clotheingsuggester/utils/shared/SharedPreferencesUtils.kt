@@ -1,9 +1,9 @@
-package com.nourelden515.clotheingsuggester.utils
+package com.nourelden515.clotheingsuggester.utils.shared
 
 import android.content.Context
 import android.content.SharedPreferences
 
-class SharedPreferencesUtils(context: Context) {
+class SharedPreferencesUtils(context: Context) : SharedPreferencesInterface {
     private var sharedPreferences: SharedPreferences? = null
 
     init {
@@ -11,7 +11,7 @@ class SharedPreferencesUtils(context: Context) {
             context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
     }
 
-    fun saveLatLon(lat: Float, lon: Float) {
+    override fun saveLatLon(lat: Float, lon: Float) {
         val editor: SharedPreferences.Editor? = sharedPreferences?.edit()
         clearLatLon()
         editor?.putFloat(LAT_KEY, lat)
@@ -19,48 +19,48 @@ class SharedPreferencesUtils(context: Context) {
         editor?.apply()
     }
 
-    fun getLatLon(): Pair<Float?, Float?> {
+    override fun getLatLon(): Pair<Float?, Float?> {
         val lat: Float? = sharedPreferences?.getFloat(LAT_KEY, 0F)
         val lon: Float? = sharedPreferences?.getFloat(LON_KEY, 0F)
         return Pair(lat, lon)
     }
 
-    private fun clearLatLon() {
+    override fun clearLatLon() {
         val editor: SharedPreferences.Editor? = sharedPreferences?.edit()
         editor?.remove(LAT_KEY)
         editor?.remove(LON_KEY)
         editor?.apply()
     }
 
-    fun saveImageIndex(newImageIndex: Int) {
+    override fun saveImageIndex(newImageIndex: Int) {
         clearImageIndex()
         val editor: SharedPreferences.Editor? = sharedPreferences?.edit()
         editor?.putInt(IMAGE_KEY, newImageIndex)
         editor?.apply()
     }
 
-    fun getImageIndex(): Int? {
+    override fun getImageIndex(): Int? {
         return sharedPreferences?.getInt(IMAGE_KEY, -1)
     }
 
-    private fun clearImageIndex() {
+    override fun clearImageIndex() {
         val editor: SharedPreferences.Editor? = sharedPreferences?.edit()
         editor?.remove(IMAGE_KEY)
         editor?.apply()
     }
 
-    fun saveToday(today: Int) {
+    override fun saveToday(today: Int) {
         clearDay()
         val editor: SharedPreferences.Editor? = sharedPreferences?.edit()
         editor?.putInt(DAY_KEY, today)
         editor?.apply()
     }
 
-    fun getLastViewedDay(): Int? {
+    override fun getLastViewedDay(): Int? {
         return sharedPreferences?.getInt(DAY_KEY, -1)
     }
 
-    private fun clearDay() {
+    override fun clearDay() {
         val editor: SharedPreferences.Editor? = sharedPreferences?.edit()
         editor?.remove(DAY_KEY)
         editor?.apply()

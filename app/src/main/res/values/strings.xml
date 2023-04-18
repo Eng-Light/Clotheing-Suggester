@@ -10,4 +10,25 @@ We will not store any location info in our data base if they are not a part of o
 For further info read our privacy policy.</string>
     <string name="hello_from_home_fragment">Hello From Home Fragment</string>
     <string name="skip_for_today">Skip For Today</string>
+    <string name="today_s_outfit">Today\'s Outfit</string>
+    <string name="get_my_location_and_continue">Get my location and continue</string>
+    <string name="get_the_best_clothes_suggestions_based_on_the_weather_in_your_location">Get The Best Clothes Suggestions That Fits The Weather In Your Location</string>
+    <string name="dialog_title">Reset Your Location?</string>
+    <string name="accept">You Can Reset Your Default Location</string>
+    <string name="yes">Yes</string>
+    <string name="no">No Thanks</string>
+    <string name="canceled">Canceled</string>
+    <string name="title">Do you want Exit ?</string>
+    <string name="confirm">confirm</string>
+    <string name="exit">exit</string>
+    <string name="stay">stay</string>
+    <string name="ok">Ok</string>
+    <string name="make_this_your_default_location">Make This Your Default Location?</string>
+    <string name="we_can_save_your_location_for_you">We can save your location for you :)</string>
+    <string name="location_permissions_is_granted">Location permissions is granted.</string>
+    <string name="location_permission_was_not_granted">Location permission was not granted.</string>
+    <string name="only_approximate_location_access_granted">Only approximate location access granted.</string>
+    <string name="please_enable_your_location_settings">Please Enable your Location Settings</string>
+    <string name="location_is_disabled">Location is Disabled</string>
+    <string name="connection_error">Connection Error</string>
 </resources>

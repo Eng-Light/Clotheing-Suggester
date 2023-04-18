@@ -1,10 +1,8 @@
 package com.nourelden515.clotheingsuggester.ui.location
 
 import android.Manifest
-import android.app.AlertDialog
 import android.content.pm.PackageManager
 import android.location.Location
-import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
@@ -12,13 +10,16 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.CancellationTokenSource
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.nourelden515.clotheingsuggester.R
 import com.nourelden515.clotheingsuggester.base.BaseFragment
 import com.nourelden515.clotheingsuggester.data.RepositoryImpl
 import com.nourelden515.clotheingsuggester.data.source.RemoteDataSourceImpl
 import com.nourelden515.clotheingsuggester.databinding.FragmentLocationBinding
 import com.nourelden515.clotheingsuggester.ui.home.HomeFragment
-import com.nourelden515.clotheingsuggester.utils.SharedPreferencesUtils
+import com.nourelden515.clotheingsuggester.utils.shared.SharedPreferencesUtils
+import com.nourelden515.clotheingsuggester.utils.onClickBackFromNavigation
 import com.nourelden515.clotheingsuggester.utils.replaceFragment
 
 class LocationFragment : BaseFragment<FragmentLocationBinding>(), LocationView {
@@ -47,6 +48,7 @@ class LocationFragment : BaseFragment<FragmentLocationBinding>(), LocationView {
         binding.buttonContinue.setOnClickListener {
             getLatestLocation()
         }
+        onClickBackFromNavigation()
     }
 
     /**
@@ -64,8 +66,8 @@ class LocationFragment : BaseFragment<FragmentLocationBinding>(), LocationView {
                             )
                         } else {
                             showRationaleDialog(
-                                "Location is Disabled",
-                                "Please Enable Your Location Settings"
+                                getString(R.string.location_is_disabled),
+                                getString(R.string.please_enable_your_location_settings)
                             )
                         }
                     }
@@ -91,10 +93,10 @@ class LocationFragment : BaseFragment<FragmentLocationBinding>(), LocationView {
                         location
                     )
                 } else {
-                    Toast.makeText(
-                        requireContext(),
-                        "Please Enable your Location Settings",
-                        Toast.LENGTH_LONG
+                    Snackbar.make(
+                        requireView(),
+                        getString(R.string.please_enable_your_location_settings),
+                        Snackbar.LENGTH_SHORT
                     ).show()
                 }
             }
@@ -125,20 +127,12 @@ class LocationFragment : BaseFragment<FragmentLocationBinding>(), LocationView {
                     Manifest.permission.ACCESS_COARSE_LOCATION,
                     false
                 ) -> {
-                    Toast.makeText(
-                        requireContext(),
-                        "Only approximate location access granted.",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    log(getString(R.string.only_approximate_location_access_granted))
                     getLatestLocation()
                 }
 
                 else -> {
-                    Toast.makeText(
-                        requireContext(),
-                        "Location permission was not granted.",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    log(getString(R.string.location_permission_was_not_granted))
                 }
             }
         }
@@ -176,9 +170,7 @@ class LocationFragment : BaseFragment<FragmentLocationBinding>(), LocationView {
                 )
             }
         } else {
-            Toast.makeText(
-                requireContext(), "Location permissions is granted.", Toast.LENGTH_LONG
-            ).show()
+            log(getString(R.string.location_permissions_is_granted))
             result = true
         }
         return result
@@ -188,35 +180,41 @@ class LocationFragment : BaseFragment<FragmentLocationBinding>(), LocationView {
      * Shows dialog to inform the user why we need those permissions.
      */
     private fun showRationaleDialog(title: String, message: String) {
-        val builder: AlertDialog.Builder = AlertDialog.Builder(requireContext())
-        builder.setTitle(title).setMessage(message).setPositiveButton("Ok") { _, _ ->
-            requestPermissionLauncher.launch(
-                arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(title)
+            .setMessage(message)
+            .setPositiveButton(
+                getString(R.string.ok)
+            ) { _, _ ->
+                requestPermissionLauncher.launch(
+                    arrayOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    )
                 )
-            )
-        }
-        builder.create().show()
+            }
+            .show()
     }
 
     private fun showSaveLocationRationaleDialog(
         location: Location
     ) {
-        val builder: AlertDialog.Builder = AlertDialog.Builder(requireContext())
-        builder
-            .setTitle("Make This Your Default Location?")
-            .setMessage("We can save your location for you :)")
-            .setPositiveButton("Ok") { _, _ ->
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.make_this_your_default_location))
+            .setMessage(getString(R.string.we_can_save_your_location_for_you))
+            .setPositiveButton(
+                getString(R.string.yes)
+            ) { _, _ ->
                 presenter.saveLatLon(
                     location.latitude.toFloat(),
                     location.longitude.toFloat()
                 )
                 navigateToHomeFragment(location)
             }
-            .setNegativeButton("No Thanks") { _, _ ->
+            .setNegativeButton(
+                getString(R.string.no)
+            ) { _, _ ->
                 navigateToHomeFragment(location)
-            }
-        builder.create().show()
+            }.show()
     }
 }
