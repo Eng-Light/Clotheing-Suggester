@@ -1,6 +1,5 @@
 package com.nourelden515.clotheingsuggester.data
 
-import com.nourelden515.clotheingsuggester.data.models.WeatherResponse
 import io.reactivex.rxjava3.core.Observable
 import okhttp3.Response
 
