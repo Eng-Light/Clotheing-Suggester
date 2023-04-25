@@ -5,9 +5,8 @@ import okhttp3.Response
 
 interface Repository {
     fun getWeatherData(
-        lat: Float, lon: Float,
-        observable: (Observable<Response>) -> Unit
-    )
+        lat: Float, lon: Float
+    ): Observable<Response>
 
     fun saveLatLon(lat: Float, lon: Float)
     fun getLatLon(): Pair<Float?, Float?>

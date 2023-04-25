@@ -10,7 +10,7 @@ import okhttp3.Request
 import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 
-class RemoteDataSourceImpl() : RemoteDataSource {
+class RemoteDataSourceImpl : RemoteDataSource {
 
     private val logInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BASIC
@@ -21,9 +21,8 @@ class RemoteDataSourceImpl() : RemoteDataSource {
     }.build()
 
     override fun getWeatherData(
-        lat: Float, lon: Float,
-        observable: (Observable<Response>) -> Unit
-    ) {
+        lat: Float, lon: Float
+    ): Observable<Response> {
         val formRequest1Body = FormBody.Builder()
             .add("key", BuildConfig.API_KEY)
             .add("q", "${lat},${lon}")
@@ -69,7 +68,7 @@ class RemoteDataSourceImpl() : RemoteDataSource {
                 }
             }
         }
-        observable(observable2)
+        return observable2
     }
 
     companion object {

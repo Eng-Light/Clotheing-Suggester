@@ -12,13 +12,11 @@ class RepositoryImpl(
 
     override fun getWeatherData(
         lat: Float,
-        lon: Float,
-        observable: (Observable<Response>) -> Unit
-    ) {
-        remoteDataSource.getWeatherData(
+        lon: Float
+    ): Observable<Response> {
+        return remoteDataSource.getWeatherData(
             lat,
-            lon,
-            observable
+            lon
         )
     }
 
