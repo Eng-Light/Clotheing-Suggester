@@ -2,7 +2,6 @@ package com.nourelden515.clotheingsuggester.data
 
 import com.nourelden515.clotheingsuggester.data.source.RemoteDataSource
 import com.nourelden515.clotheingsuggester.utils.shared.SharedPreferencesInterface
-import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import okhttp3.Response
 
