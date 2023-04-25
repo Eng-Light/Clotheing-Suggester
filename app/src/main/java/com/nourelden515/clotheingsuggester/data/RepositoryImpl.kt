@@ -3,6 +3,8 @@ package com.nourelden515.clotheingsuggester.data
 import com.nourelden515.clotheingsuggester.data.models.WeatherResponse
 import com.nourelden515.clotheingsuggester.data.source.RemoteDataSource
 import com.nourelden515.clotheingsuggester.utils.shared.SharedPreferencesInterface
+import io.reactivex.rxjava3.core.Observable
+import okhttp3.Response
 
 class RepositoryImpl(
     private val remoteDataSource: RemoteDataSource,
@@ -12,14 +14,12 @@ class RepositoryImpl(
     override fun getWeatherData(
         lat: Float,
         lon: Float,
-        onSuccess: (response: WeatherResponse) -> Unit,
-        onFailure: (error: Throwable) -> Unit
+        observable: (Observable<Response>) -> Unit
     ) {
         remoteDataSource.getWeatherData(
             lat,
             lon,
-            onSuccess,
-            onFailure
+            observable
         )
     }
 

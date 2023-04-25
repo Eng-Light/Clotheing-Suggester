@@ -1,12 +1,13 @@
 package com.nourelden515.clotheingsuggester.data
 
 import com.nourelden515.clotheingsuggester.data.models.WeatherResponse
+import io.reactivex.rxjava3.core.Observable
+import okhttp3.Response
 
 interface Repository {
     fun getWeatherData(
         lat: Float, lon: Float,
-        onSuccess: (response: WeatherResponse) -> Unit,
-        onFailure: (error: Throwable) -> Unit
+        observable: (Observable<Response>) -> Unit
     )
 
     fun saveLatLon(lat: Float, lon: Float)
