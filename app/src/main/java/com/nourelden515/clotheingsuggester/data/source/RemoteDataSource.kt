@@ -5,7 +5,6 @@ import okhttp3.Response
 
 interface RemoteDataSource {
     fun getWeatherData(
-        lat: Float, lon: Float,
-        observable: (Observable<Response>) -> Unit
-    )
+        lat: Float, lon: Float
+    ):Observable<Response>
 }

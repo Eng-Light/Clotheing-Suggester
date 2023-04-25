@@ -15,10 +15,11 @@ class HomePresenter(
     private val homeView: HomeView
 ) {
     fun getWeatherData(lat: Double, lon: Double) {
-        repository.getWeatherData(
-            lat.toFloat(),
-            lon.toFloat(),
-            ::observeResponse
+        observeResponse(
+            repository.getWeatherData(
+                lat.toFloat(),
+                lon.toFloat()
+            )
         )
     }
 
