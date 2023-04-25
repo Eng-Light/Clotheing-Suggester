@@ -33,7 +33,6 @@ class RemoteDataSourceImpl() : RemoteDataSource {
             .url(url)
             .post(formRequest1Body)
             .build()
-        //val responseType = object : TypeToken<WeatherResponse>() {}.type
 
         val observer1 = Observable.create { emitter ->
             try {
@@ -45,8 +44,8 @@ class RemoteDataSourceImpl() : RemoteDataSource {
             }
         }
 
-        val observable2 = observer1.flatMap { emitter ->
-            val responseBody = emitter.body?.string()
+        val observable2 = observer1.flatMap { response1 ->
+            val responseBody = response1.body?.string()
             val gson = Gson()
             val result = gson.fromJson(responseBody, WeatherResponse::class.java)
 
