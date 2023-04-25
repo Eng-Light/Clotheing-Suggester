@@ -77,8 +77,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(), HomeView {
 
     private fun refreshApp() {
         binding.swipeToRefresh.setOnRefreshListener {
-            showLoading()
-            presenter.getWeatherData(location.first, location.second)
+            checkLocationAndGetAllData()
             binding.swipeToRefresh.isRefreshing = false
         }
     }
@@ -95,6 +94,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(), HomeView {
             showLocation(weatherData)
             showDataInWeatherCard(weatherData)
             loadImage(weatherData.currentWeather.condition.iconUrl)
+            setOutfitImage()
         }
     }
 
@@ -130,7 +130,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(), HomeView {
             .with(binding.weatherCard.imageWeather.context)
             .load("https:/${iconUrl}")
             .into(binding.weatherCard.imageWeather)
-        setOutfitImage()
     }
 
     override fun showError(error: Throwable) {
