@@ -3,7 +3,7 @@ package com.nourelden515.clotheingsuggester.data.source
 import com.google.gson.Gson
 import com.nourelden515.clotheingsuggester.BuildConfig
 import com.nourelden515.clotheingsuggester.data.models.WeatherResponse
-import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Single
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -22,7 +22,7 @@ class RemoteDataSourceImpl : RemoteDataSource {
 
     override fun getWeatherData(
         lat: Float, lon: Float
-    ): Observable<Response> {
+    ): Single<Response> {
         val formRequest1Body = FormBody.Builder()
             .add("key", BuildConfig.API_KEY)
             .add("q", "${lat},${lon}")
@@ -33,17 +33,14 @@ class RemoteDataSourceImpl : RemoteDataSource {
             .post(formRequest1Body)
             .build()
 
-        val observer1 = Observable.create { emitter ->
+        return Single.create<Response> { emitter ->
             try {
                 val response = client.newCall(request1).execute()
-                emitter.onNext(response)
-                emitter.onComplete()
+                emitter.onSuccess(response)
             } catch (e: Exception) {
                 emitter.onError(e)
             }
-        }
-
-        val observable2 = observer1.flatMap { response1 ->
+        }.flatMap { response1 ->
             val responseBody = response1.body?.string()
             val gson = Gson()
             val result = gson.fromJson(responseBody, WeatherResponse::class.java)
@@ -58,17 +55,15 @@ class RemoteDataSourceImpl : RemoteDataSource {
                 .post(formRequest2Body)
                 .build()
 
-            Observable.create<Response> { emitter ->
+            Single.create<Response> { emitter ->
                 try {
                     val response2 = client.newCall(request2).execute()
-                    emitter.onNext(response2)
-                    emitter.onComplete()
+                    emitter.onSuccess(response2)
                 } catch (e: Exception) {
                     emitter.onError(e)
                 }
             }
         }
-        return observable2
     }
 
     companion object {
