@@ -33,7 +33,7 @@ class RemoteDataSourceImpl : RemoteDataSource {
             .post(formRequest1Body)
             .build()
 
-        return Single.create<Response> { emitter ->
+        return Single.create { emitter ->
             try {
                 val response = client.newCall(request1).execute()
                 emitter.onSuccess(response)
@@ -55,7 +55,7 @@ class RemoteDataSourceImpl : RemoteDataSource {
                 .post(formRequest2Body)
                 .build()
 
-            Single.create<Response> { emitter ->
+            Single.create { emitter ->
                 try {
                     val response2 = client.newCall(request2).execute()
                     emitter.onSuccess(response2)
