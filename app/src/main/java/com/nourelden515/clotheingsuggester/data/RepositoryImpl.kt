@@ -1,19 +1,22 @@
 package com.nourelden515.clotheingsuggester.data
 
-import com.nourelden515.clotheingsuggester.data.source.RemoteDataSource
+import android.graphics.drawable.Drawable
+import com.nourelden515.clotheingsuggester.data.models.WeatherResponse
+import com.nourelden515.clotheingsuggester.data.source.local.LocalDataSource
+import com.nourelden515.clotheingsuggester.data.source.remote.RemoteDataSource
 import com.nourelden515.clotheingsuggester.utils.shared.SharedPreferencesInterface
 import io.reactivex.rxjava3.core.Single
-import okhttp3.Response
 
 class RepositoryImpl(
     private val remoteDataSource: RemoteDataSource,
+    private val localDataSource: LocalDataSource,
     private val sharedPreferences: SharedPreferencesInterface
 ) : Repository {
 
     override fun getWeatherData(
         lat: Float,
         lon: Float
-    ): Single<Response> {
+    ): Single<WeatherResponse> {
         return remoteDataSource.getWeatherData(
             lat,
             lon
@@ -46,6 +49,22 @@ class RepositoryImpl(
 
     override fun getLastViewedDay(): Int {
         return sharedPreferences.getLastViewedDay()!!
+    }
+
+    override fun getSummerOutfits(): List<Drawable> {
+        return localDataSource.getSummerOutfits()
+    }
+
+    override fun getWinterOutfits(): List<Drawable> {
+        return localDataSource.getWinterOutfits()
+    }
+
+    override fun getOutfits(temp: Int): List<Drawable> {
+        return if (temp >= 20) {
+            getSummerOutfits()
+        } else {
+            getWinterOutfits()
+        }
     }
 
 

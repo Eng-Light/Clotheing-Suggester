@@ -6,6 +6,8 @@ import android.location.Location
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.Navigation.findNavController
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
@@ -14,30 +16,31 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.nourelden515.clotheingsuggester.R
 import com.nourelden515.clotheingsuggester.base.BaseFragment
+import com.nourelden515.clotheingsuggester.base.ViewModelFactory
 import com.nourelden515.clotheingsuggester.data.Repository
 import com.nourelden515.clotheingsuggester.data.RepositoryImpl
-import com.nourelden515.clotheingsuggester.data.source.RemoteDataSourceImpl
+import com.nourelden515.clotheingsuggester.data.source.local.LocalDataSourceImpl
+import com.nourelden515.clotheingsuggester.data.source.remote.RemoteDataSourceImpl
 import com.nourelden515.clotheingsuggester.databinding.FragmentLocationBinding
-import com.nourelden515.clotheingsuggester.ui.home.HomeFragment
 import com.nourelden515.clotheingsuggester.utils.onClickBackFromNavigation
-import com.nourelden515.clotheingsuggester.utils.replaceFragment
 import com.nourelden515.clotheingsuggester.utils.shared.SharedPreferencesInterface
 import com.nourelden515.clotheingsuggester.utils.shared.SharedPreferencesUtils
 
-class LocationFragment : BaseFragment<FragmentLocationBinding>(), LocationView {
+class LocationFragment : BaseFragment<FragmentLocationBinding>() {
 
     private val sharedPreferencesUtils: SharedPreferencesInterface by lazy {
         SharedPreferencesUtils(requireContext())
     }
+
+    private val viewModel by lazy {
+        ViewModelProvider(this, ViewModelFactory(repository))[LocationViewModel::class.java]
+    }
+
     private val repository: Repository by lazy {
         RepositoryImpl(
             RemoteDataSourceImpl(),
+            LocalDataSourceImpl(requireContext()),
             sharedPreferencesUtils
-        )
-    }
-    private val presenter by lazy {
-        LocationPresenter(
-            repository, this
         )
     }
 
@@ -49,6 +52,17 @@ class LocationFragment : BaseFragment<FragmentLocationBinding>(), LocationView {
     override fun getViewBinding() = FragmentLocationBinding.inflate(layoutInflater)
 
     override fun setUp() {
+
+        viewModel.getLatLon()
+        viewModel.locationValid.observe(viewLifecycleOwner) {
+            if (it == true) {
+                viewModel.location.value?.let { it1 -> navigateToHome(it1) }
+                viewModel.onCompleteNavigation()
+            } else {
+                log("NOT Valid")
+            }
+        }
+
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(
             requireContext()
         )
@@ -57,6 +71,14 @@ class LocationFragment : BaseFragment<FragmentLocationBinding>(), LocationView {
             getLatestLocation()
         }
         onClickBackFromNavigation()
+    }
+
+    private fun navigateToHome(location: Pair<Float?, Float?>) {
+        if (location.first != 0F && location.second != 0F) {
+            val action = LocationFragmentDirections
+                .actionLocationFragmentToHomeFragment(location.first!!, location.second!!)
+            findNavController(requireView()).navigate(action)
+        }
     }
 
     /**
@@ -108,11 +130,6 @@ class LocationFragment : BaseFragment<FragmentLocationBinding>(), LocationView {
                     ).show()
                 }
             }
-    }
-
-    private fun navigateToHomeFragment(location: Location) {
-        val homeFragment = HomeFragment.newInstance(location.latitude, location.longitude)
-        replaceFragment(homeFragment)
     }
 
     /**
@@ -213,16 +230,16 @@ class LocationFragment : BaseFragment<FragmentLocationBinding>(), LocationView {
             .setPositiveButton(
                 getString(R.string.yes)
             ) { _, _ ->
-                presenter.saveLatLon(
+                viewModel.saveLatLon(
                     location.latitude.toFloat(),
                     location.longitude.toFloat()
                 )
-                navigateToHomeFragment(location)
+                navigateToHome(Pair(location.latitude.toFloat(), location.longitude.toFloat()))
             }
             .setNegativeButton(
                 getString(R.string.no)
             ) { _, _ ->
-                navigateToHomeFragment(location)
+                navigateToHome(Pair(location.latitude.toFloat(), location.longitude.toFloat()))
             }.show()
     }
 }

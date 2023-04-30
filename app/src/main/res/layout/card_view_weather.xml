@@ -1,68 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    app:cardCornerRadius="@dimen/radius_large"
-    app:strokeWidth="0dp">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <data>
+
+        <variable
+            name="cardWeatherData"
+            type="com.nourelden515.clotheingsuggester.data.models.WeatherResponse" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/customBackgroundColor"
-        android:paddingHorizontal="@dimen/spacing_small"
-        android:paddingVertical="@dimen/spacing_small">
+        app:cardCornerRadius="@dimen/radius_large"
+        app:strokeWidth="0dp">
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/text_temp"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/colorTextTitle"
-            android:textSize="65sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="29°C" />
+            android:background="?attr/customBackgroundColor"
+            android:paddingHorizontal="@dimen/spacing_small"
+            android:paddingVertical="@dimen/spacing_small">
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/text_condition"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/colorTextTitle"
-            android:textSize="@dimen/text_medium"
-            app:layout_constraintStart_toStartOf="@id/text_temp"
-            app:layout_constraintTop_toBottomOf="@id/text_temp"
-            tools:text="Fair" />
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/text_temp"
+                text_temp="@{cardWeatherData.currentWeather.temperatureCelsius}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorTextTitle"
+                android:textSize="65sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="29°C" />
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/text_feels_like"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_medium"
-            android:textColor="@color/colorTextTitle"
-            android:textSize="@dimen/text_small"
-            app:layout_constraintStart_toStartOf="@id/text_temp"
-            app:layout_constraintTop_toBottomOf="@id/text_condition"
-            tools:text="Feels like 27°" />
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/text_condition"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{cardWeatherData.currentWeather.condition.text}"
+                android:textColor="@color/colorTextTitle"
+                android:textSize="@dimen/text_medium"
+                app:layout_constraintStart_toStartOf="@id/text_temp"
+                app:layout_constraintTop_toBottomOf="@id/text_temp"
+                tools:text="Fair" />
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/text_date_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/colorTextTitle"
-            android:textSize="@dimen/text_small"
-            app:layout_constraintStart_toStartOf="@id/text_temp"
-            app:layout_constraintTop_toBottomOf="@id/text_feels_like"
-            tools:text="Mon, 10:56 AM" />
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/text_feels_like"
+                text_feels_like_temp="@{cardWeatherData.currentWeather.feelsLikeTemperatureCelsius}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_medium"
+                android:textColor="@color/colorTextTitle"
+                android:textSize="@dimen/text_small"
+                app:layout_constraintStart_toStartOf="@id/text_temp"
+                app:layout_constraintTop_toBottomOf="@id/text_condition"
+                tools:text="Feels like 27°" />
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/image_weather"
-            android:layout_width="100dp"
-            android:layout_height="0dp"
-            android:scaleType="fitCenter"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/text_date_time"
+                time="@{cardWeatherData.location.localTime}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorTextTitle"
+                android:textSize="@dimen/text_small"
+                app:layout_constraintStart_toStartOf="@id/text_temp"
+                app:layout_constraintTop_toBottomOf="@id/text_feels_like"
+                tools:text="Mon, 10:56 AM" />
 
-</com.google.android.material.card.MaterialCardView>
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/image_weather"
+                icon="@{cardWeatherData.currentWeather.condition.iconUrl}"
+                android:layout_width="100dp"
+                android:layout_height="0dp"
+                android:scaleType="fitCenter"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+</layout>

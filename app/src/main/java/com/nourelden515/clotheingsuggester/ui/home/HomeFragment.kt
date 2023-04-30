@@ -1,38 +1,31 @@
 package com.nourelden515.clotheingsuggester.ui.home
 
-import android.graphics.drawable.Drawable
-import android.os.Bundle
-import android.view.View
-import com.bumptech.glide.Glide
+import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.nourelden515.clotheingsuggester.R
 import com.nourelden515.clotheingsuggester.base.BaseFragment
+import com.nourelden515.clotheingsuggester.base.ViewModelFactory
 import com.nourelden515.clotheingsuggester.data.Repository
 import com.nourelden515.clotheingsuggester.data.RepositoryImpl
-import com.nourelden515.clotheingsuggester.data.models.WeatherResponse
-import com.nourelden515.clotheingsuggester.data.source.RemoteDataSourceImpl
+import com.nourelden515.clotheingsuggester.data.models.ApiState
+import com.nourelden515.clotheingsuggester.data.source.local.LocalDataSourceImpl
+import com.nourelden515.clotheingsuggester.data.source.remote.RemoteDataSourceImpl
 import com.nourelden515.clotheingsuggester.databinding.FragmentHomeBinding
-import com.nourelden515.clotheingsuggester.ui.location.LocationFragment
-import com.nourelden515.clotheingsuggester.utils.getSummerOutfits
-import com.nourelden515.clotheingsuggester.utils.getWinterOutfits
 import com.nourelden515.clotheingsuggester.utils.onClickBackFromNavigation
-import com.nourelden515.clotheingsuggester.utils.replaceFragment
 import com.nourelden515.clotheingsuggester.utils.shared.SharedPreferencesInterface
 import com.nourelden515.clotheingsuggester.utils.shared.SharedPreferencesUtils
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.time.format.TextStyle
-import java.util.Calendar
-import java.util.Locale
-import java.util.Random
-import kotlin.properties.Delegates
 
-class HomeFragment : BaseFragment<FragmentHomeBinding>(), HomeView {
+class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     private lateinit var location: Pair<Double, Double>
-    private var temp by Delegates.notNull<Int>()
-    private var imageIndex by Delegates.notNull<Int>()
-    private var lastViewedDay by Delegates.notNull<Int>()
+
+    private val args: HomeFragmentArgs by navArgs()
+
+    private val viewModel by lazy {
+        ViewModelProvider(this, ViewModelFactory(repository))[HomeViewModel::class.java]
+    }
 
     private val sharedPreferencesUtils: SharedPreferencesInterface by lazy {
         SharedPreferencesUtils(requireContext())
@@ -40,13 +33,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(), HomeView {
     private val repository: Repository by lazy {
         RepositoryImpl(
             RemoteDataSourceImpl(),
+            LocalDataSourceImpl(requireContext()),
             sharedPreferencesUtils
-        )
-    }
-
-    private val presenter by lazy {
-        HomePresenter(
-            repository, this
         )
     }
 
@@ -54,24 +42,32 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(), HomeView {
     override fun getViewBinding() = FragmentHomeBinding.inflate(layoutInflater)
 
     override fun setUp() {
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = this
+
         getLocation()
         refreshApp()
         checkLocationAndGetAllData()
         addCallbacks()
         onClickBackFromNavigation()
+        addObservers()
+    }
+
+    private fun getLocation() {
+        location = Pair(args.lat.toDouble(), args.lon.toDouble())
+    }
+
+    private fun addObservers() {
+        viewModel.weatherResponse.observe(viewLifecycleOwner) {
+            if (it is ApiState.Error) {
+                showError()
+            }
+        }
     }
 
     private fun addCallbacks() {
         binding.buttonResetLocation.setOnClickListener {
             showResetLocationDialog()
-        }
-    }
-
-    private fun setSkipListener() {
-        binding.buttonSkip.setOnClickListener {
-            val outFits = getOutfits()
-            val today = getToday()
-            setNewImage(outFits, today)
         }
     }
 
@@ -82,59 +78,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(), HomeView {
         }
     }
 
-    private fun showLoading() {
-        binding.loading.visibility = View.VISIBLE
-    }
 
-    override fun showWeatherData(weatherData: WeatherResponse) {
-        log(weatherData.toString())
-        temp = weatherData.currentWeather.temperatureCelsius.toInt()
+    private fun showError() {
         activity?.runOnUiThread {
-            stopLoading()
-            showLocation(weatherData)
-            showDataInWeatherCard(weatherData)
-            loadImage(weatherData.currentWeather.condition.iconUrl)
-            setOutfitImage()
-        }
-    }
-
-    private fun showLocation(weatherData: WeatherResponse) {
-        "${weatherData.location.name}, ${weatherData.location.region}".also {
-            binding.textLocation.text = it
-        }
-    }
-
-    private fun showDataInWeatherCard(weatherData: WeatherResponse) {
-        with(binding.weatherCard) {
-            "${temp}°C".also {
-                textTemp.text = it
-            }
-            textCondition.text = weatherData.currentWeather.condition.text
-            textDateTime.text = convertDateFormat(weatherData.location.localTime)
-            "Feels Like ${
-                weatherData
-                    .currentWeather
-                    .feelsLikeTemperatureCelsius.toInt()
-            }°C".also {
-                textFeelsLike.text = it
-            }
-        }
-    }
-
-    private fun stopLoading() {
-        binding.loading.visibility = View.INVISIBLE
-    }
-
-    private fun loadImage(iconUrl: String) {
-        Glide
-            .with(binding.weatherCard.imageWeather.context)
-            .load("https:/${iconUrl}")
-            .into(binding.weatherCard.imageWeather)
-    }
-
-    override fun showError(error: Throwable) {
-        activity?.runOnUiThread {
-            stopLoading()
             showSnackBar(getString(R.string.connection_error)) {
                 checkLocationAndGetAllData()
             }
@@ -143,9 +89,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(), HomeView {
 
     private fun checkLocationAndGetAllData() {
         if (::location.isInitialized) {
-            showLoading()
-            presenter.getImageData()
-            presenter.getWeatherData(location.first, location.second)
+            viewModel.getImageIndex()
+            viewModel.getImageLastViewedDay()
+            viewModel.getWeatherData(location.first, location.second)
         }
     }
 
@@ -159,68 +105,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(), HomeView {
         snackBar.show()
     }
 
-    private fun setOutfitImage() {
-        val outFits = getOutfits()
-        val today = getToday()
-        if (imageIndex == -1 || today != lastViewedDay) {
-            setNewImage(outFits, today)
-        } else {
-            setSameImage(outFits)
-        }
-        setSkipListener()
-    }
-
-    private fun setSameImage(outFits: List<Drawable>) {
-        val savedImage = outFits[imageIndex]
-        binding.imageOutfit.setImageDrawable(savedImage)
-    }
-
-    private fun setNewImage(
-        outFits: List<Drawable>,
-        today: Int
-    ) {
-        val newImageIndex = Random().nextInt(outFits.size)
-        val newImage = outFits[newImageIndex]
-        presenter.saveImageData(newImageIndex, today)
-
-        binding.imageOutfit.setImageDrawable(newImage)
-        log(imageIndex)
-    }
-
-    private fun getToday(): Int {
-        val calendar = Calendar.getInstance()
-        return calendar.get(Calendar.DAY_OF_YEAR)
-    }
-
-    override fun getImageData(imageIndex: Int, lastViewedDay: Int) {
-        this.imageIndex = imageIndex
-        this.lastViewedDay = lastViewedDay
-    }
-
-    private fun getOutfits(): List<Drawable> {
-        return if (temp >= 20) {
-            getSummerOutfits()
-        } else {
-            getWinterOutfits()
-        }
-    }
-
-    private fun getLocation() {
-        arguments?.let {
-            location = Pair(it.getDouble(LATITUDE), it.getDouble(LONGITUDE))
-        }
-    }
-
-    private fun convertDateFormat(dateStr: String): String {
-        val formatter = DateTimeFormatter.ofPattern(getString(R.string.yyyy_mm_dd_h_mm))
-        val dateTime = LocalDateTime.parse(dateStr, formatter)
-
-        val dayOfWeek = dateTime.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())
-        val time = dateTime.format(DateTimeFormatter.ofPattern(getString(R.string.h_mm_a)))
-
-        return "$dayOfWeek, $time"
-    }
-
     private fun showResetLocationDialog() {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(getString(R.string.dialog_title))
@@ -228,7 +112,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(), HomeView {
             .setPositiveButton(
                 getString(R.string.yes)
             ) { _, _ ->
-                presenter.resetLocation()
+                viewModel.resetLocation()
                 navigateToLocationFragment()
             }
             .setNegativeButton(
@@ -241,20 +125,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(), HomeView {
     }
 
     private fun navigateToLocationFragment() {
-        replaceFragment(LocationFragment())
+        findNavController().navigate(R.id.action_homeFragment_to_locationFragment)
     }
-
-    companion object {
-        const val LATITUDE = "LATITUDE"
-        const val LONGITUDE = "LONGITUDE"
-
-        fun newInstance(latitude: Double, longitude: Double) =
-            HomeFragment().apply {
-                arguments = Bundle().apply {
-                    putDouble(LATITUDE, latitude)
-                    putDouble(LONGITUDE, longitude)
-                }
-            }
-    }
-
 }
