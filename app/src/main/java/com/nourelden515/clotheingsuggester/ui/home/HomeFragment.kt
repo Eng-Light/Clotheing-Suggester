@@ -78,12 +78,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         }
     }
 
-
     private fun showError() {
-        activity?.runOnUiThread {
-            showSnackBar(getString(R.string.connection_error)) {
-                checkLocationAndGetAllData()
-            }
+        showSnackBar(getString(R.string.connection_error)) {
+            checkLocationAndGetAllData()
         }
     }
 
