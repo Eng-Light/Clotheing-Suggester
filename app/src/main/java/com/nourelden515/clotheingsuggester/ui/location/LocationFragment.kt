@@ -6,7 +6,6 @@ import android.location.Location
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation.findNavController
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
@@ -16,33 +15,23 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.nourelden515.clotheingsuggester.R
 import com.nourelden515.clotheingsuggester.base.BaseFragment
-import com.nourelden515.clotheingsuggester.base.ViewModelFactory
-import com.nourelden515.clotheingsuggester.data.Repository
 import com.nourelden515.clotheingsuggester.data.RepositoryImpl
 import com.nourelden515.clotheingsuggester.data.source.local.LocalDataSourceImpl
 import com.nourelden515.clotheingsuggester.data.source.remote.RemoteDataSourceImpl
 import com.nourelden515.clotheingsuggester.databinding.FragmentLocationBinding
 import com.nourelden515.clotheingsuggester.utils.onClickBackFromNavigation
-import com.nourelden515.clotheingsuggester.utils.shared.SharedPreferencesInterface
 import com.nourelden515.clotheingsuggester.utils.shared.SharedPreferencesUtils
 
-class LocationFragment : BaseFragment<FragmentLocationBinding>() {
+class LocationFragment :
+    BaseFragment<LocationViewModel, FragmentLocationBinding, RepositoryImpl>() {
 
-    private val sharedPreferencesUtils: SharedPreferencesInterface by lazy {
+    override fun getViewModel() = LocationViewModel::class.java
+
+    override fun getFragmentRepository() = RepositoryImpl(
+        RemoteDataSourceImpl(),
+        LocalDataSourceImpl(requireContext()),
         SharedPreferencesUtils(requireContext())
-    }
-
-    private val viewModel by lazy {
-        ViewModelProvider(this, ViewModelFactory(repository))[LocationViewModel::class.java]
-    }
-
-    private val repository: Repository by lazy {
-        RepositoryImpl(
-            RemoteDataSourceImpl(),
-            LocalDataSourceImpl(requireContext()),
-            sharedPreferencesUtils
-        )
-    }
+    )
 
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private var requestPermissionLauncher = registerCallBack()

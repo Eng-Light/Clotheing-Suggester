@@ -1,42 +1,32 @@
 package com.nourelden515.clotheingsuggester.ui.home
 
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.nourelden515.clotheingsuggester.R
 import com.nourelden515.clotheingsuggester.base.BaseFragment
-import com.nourelden515.clotheingsuggester.base.ViewModelFactory
-import com.nourelden515.clotheingsuggester.data.Repository
 import com.nourelden515.clotheingsuggester.data.RepositoryImpl
 import com.nourelden515.clotheingsuggester.data.models.ApiState
 import com.nourelden515.clotheingsuggester.data.source.local.LocalDataSourceImpl
 import com.nourelden515.clotheingsuggester.data.source.remote.RemoteDataSourceImpl
 import com.nourelden515.clotheingsuggester.databinding.FragmentHomeBinding
 import com.nourelden515.clotheingsuggester.utils.onClickBackFromNavigation
-import com.nourelden515.clotheingsuggester.utils.shared.SharedPreferencesInterface
 import com.nourelden515.clotheingsuggester.utils.shared.SharedPreferencesUtils
 
-class HomeFragment : BaseFragment<FragmentHomeBinding>() {
+class HomeFragment : BaseFragment<HomeViewModel, FragmentHomeBinding, RepositoryImpl>() {
+
+    override fun getViewModel() = HomeViewModel::class.java
+
+    override fun getFragmentRepository() = RepositoryImpl(
+        RemoteDataSourceImpl(),
+        LocalDataSourceImpl(requireContext()),
+        SharedPreferencesUtils(requireContext())
+    )
+
     private lateinit var location: Pair<Double, Double>
 
     private val args: HomeFragmentArgs by navArgs()
-
-    private val viewModel by lazy {
-        ViewModelProvider(this, ViewModelFactory(repository))[HomeViewModel::class.java]
-    }
-
-    private val sharedPreferencesUtils: SharedPreferencesInterface by lazy {
-        SharedPreferencesUtils(requireContext())
-    }
-    private val repository: Repository by lazy {
-        RepositoryImpl(
-            RemoteDataSourceImpl(),
-            LocalDataSourceImpl(requireContext()),
-            sharedPreferencesUtils
-        )
-    }
 
     override val TAG = this::class.java.simpleName.toString()
     override fun getViewBinding() = FragmentHomeBinding.inflate(layoutInflater)
